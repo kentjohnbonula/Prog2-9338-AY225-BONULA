@@ -6,7 +6,7 @@ import java.time.format.DateTimeFormatter;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-public class AttendanceSheet {
+public class AttendanceSheet.java {
 
     public static void main(String[] args) {
 
@@ -156,4 +156,4 @@ class SignaturePanel extends JPanel {
         g.drawImage(image, 0, 0, null);
     }
 }
-Write to FAMILY YOUTH
+
