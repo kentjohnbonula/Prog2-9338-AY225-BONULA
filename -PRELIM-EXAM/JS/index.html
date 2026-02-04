@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Records System</title>
+    <style>
+        :root { --primary: #2563eb; --success: #16a34a; --danger: #dc2626; --gray: #64748b; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f8fafc; margin: 2rem; color: #1e293b; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        
+        /* Input & Controls */
+        .form-row { display: grid; grid-template-columns: 1fr 2fr 1fr auto; gap: 10px; margin-bottom: 1.5rem; }
+        input { padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px; outline: none; font-size: 14px; }
+        input:focus { border-color: var(--primary); box-shadow: 0 0 0 2px #dbeafe; }
+        
+        button { cursor: pointer; border: none; border-radius: 6px; font-weight: 600; transition: 0.2s; }
+        .btn-add { background: var(--primary); color: white; padding: 10px 20px; }
+        .btn-add:hover { background: #1d4ed8; }
+        .btn-delete { background: #fee2e2; color: var(--danger); padding: 5px 10px; font-size: 12px; }
+        .btn-delete:hover { background: var(--danger); color: white; }
+
+        /* Search & Stats */
+        .search-container { margin-bottom: 1rem; position: relative; }
+        #searchInput { width: 100%; padding: 12px; border: 2px solid #f1f5f9; border-radius: 8px; box-sizing: border-box; }
+        .stats { margin-bottom: 10px; font-size: 14px; color: var(--gray); font-weight: 500; }
+
+        /* Table Design */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { background: #f1f5f9; text-align: left; padding: 12px; font-size: 13px; text-transform: uppercase; color: var(--gray); }
+        td { padding: 12px; border-bottom: 1px solid #f1f5f9; font-size: 15px; }
+        tr:hover { background: #f8fafc; }
+
+        /* Grade Badges */
+        .status { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+        .pass { background: #dcfce7; color: var(--success); }
+        .fail { background: #fee2e2; color: var(--danger); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Student Records Management</h2>
+
+    <div class="form-row">
+        <input type="text" id="idIn" placeholder="ID Number">
+        <input type="text" id="nameIn" placeholder="Full Name">
+        <input type="number" id="gradeIn" placeholder="Grade">
+        <button class="btn-add" onclick="addRecord()">Add Student</button>
+    </div>
+
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="🔍 Search records..." onkeyup="searchRecords()">
+    </div>
+    <div class="stats">Total Students: <span id="recordCount">0</span></div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID Number</th>
+                <th>Student Name</th>
+                <th>Grade</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+    </table>
+</div>
+
+
+
+<script>
+    /* Programmer Identifier: [Your Name] [Your ID] */
+
+    // Initial Data
+    const rawData = [
+        ["073900438", "Osbourne", "Wakenshaw", 78],
+        ["114924014", "Albie", "Gierardi", 97],
+        ["111901632", "Eleen", "Pentony", 65],
+        ["084000084", "Arie", "Okenden", 99],
+        ["272471551", "Alica", "Muckley", 45]
+    ];
+
+    let students = [];
+
+    // Initialize: Convert raw array to student objects
+    function init() {
+        students = rawData.map(item => ({
+            id: item[0],
+            name: `${item[1]} ${item[2]}`,
+            grade: item[3]
+        }));
+        render();
+    }
+
+    // Draw the table
+    function render(data = students) {
+        const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = '';
+        
+        data.forEach((s, index) => {
+            const isPass = s.grade >= 75;
+            tbody.innerHTML += `
+                <tr>
+                    <td><b>${s.id}</b></td>
+                    <td>${s.name}</td>
+                    <td>${s.grade}</td>
+                    <td><span class="status ${isPass ? 'pass' : 'fail'}">${isPass ? 'PASSED' : 'FAILED'}</span></td>
+                    <td><button class="btn-delete" onclick="deleteRecord(${index})">Delete</button></td>
+                </tr>`;
+        });
+        document.getElementById('recordCount').innerText = data.length;
+    }
+
+    // Add new student logic
+    function addRecord() {
+        const id = document.getElementById('idIn').value;
+        const name = document.getElementById('nameIn').value;
+        const grade = document.getElementById('gradeIn').value;
+
+        if(id && name && grade) {
+            students.unshift({ id, name, grade: parseInt(grade) });
+            render();
+            // Reset inputs
+            document.getElementById('idIn').value = '';
+            document.getElementById('nameIn').value = '';
+            document.getElementById('gradeIn').value = '';
+        } else {
+            alert("Please fill in all fields!");
+        }
+    }
+
+    // Delete student logic
+    function deleteRecord(index) {
+        if(confirm("Are you sure you want to delete this record?")) {
+            students.splice(index, 1);
+            render();
+        }
+    }
+
+    // Search logic
+    function searchRecords() {
+        const query = document.getElementById('searchInput').value.toLowerCase();
+        const filtered = students.filter(s => 
+            s.name.toLowerCase().includes(query) || s.id.includes(query)
+        );
+        render(filtered);
+    }
+
+    // Start everything on load
+    window.onload = init;
+</script>
+
+</body>
+</html>
